@@ -43,7 +43,7 @@ class MockData {
       description: 'Construcción creativa',
       date: DateTime.now(),
     ),
-    // Eventos adicionales para probar fechas variadas
+
     Event(
       id: 'e4',
       childId: 'c1',
@@ -62,7 +62,6 @@ class MockData {
     ),
   ];
 
-  // Asignar eventos a cada niño (para que Child tenga lista events)
   static void assignEventsToChildren() {
     for (var child in children) {
       child.events.clear();
@@ -71,7 +70,6 @@ class MockData {
   }
 }
 
-// Llama a esta función una vez al iniciar la app o antes de usar los datos
 void initializeMockData() {
   MockData.assignEventsToChildren();
 }
