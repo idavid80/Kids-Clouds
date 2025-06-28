@@ -1,28 +1,28 @@
 import 'package:flutter/material.dart';
 
 // light mode colors
-const Color _lightPrimaryColor = Colors.blue;
+const Color _lightPrimaryColor = Color(0xFF6621BA);
 const Color _lightOnPrimaryColor = Colors.white;
-const Color _lightSecondaryColor = Colors.grey;
+const Color _lightSecondaryColor = Color(0xFF6078FF);
 const Color _lightOnSecondaryColor = Colors.white;
-const Color _lightSurfaceColor = Colors.white;
-const Color _lightOnSurfaceColor = Colors.black87;
-const Color _lightErrorColor = Colors.red;
+const Color _lightSurfaceColor = Color(0xFF9BACBF);
+const Color _lightOnSurfaceColor = Color(0xFF1D1D3C);
+const Color _lightErrorColor = Color(0xFFF98A17);
 const Color _lightOnErrorColor = Colors.white;
-const Color _lightOutlineColor = Colors.grey;
-const Color _lightSurfaceContainerHighest = Color(0xFFE0E0E0);
+const Color _lightOutlineColor = Color(0xFFBDBDBD);
+const Color _lightSurfaceContainerHighest = Color(0xFFEAEDF1);
 
 // dark mode colors
-const Color _darkPrimaryColor = Color(0xFF212121);
+const Color _darkPrimaryColor = Color(0xFF6621BA);
 const Color _darkOnPrimaryColor = Colors.white;
-const Color _darkSecondaryColor = Colors.grey;
+const Color _darkSecondaryColor = Color(0xFF6078FF);
 const Color _darkOnSecondaryColor = Colors.white;
-const Color _darkSurfaceColor = Color(0xFF121212);
-const Color _darkOnSurfaceColor = Colors.white70;
-const Color _darkErrorColor = Colors.red;
-const Color _darkOnErrorColor = Colors.white;
-const Color _darkOutlineColor = Colors.grey;
-const Color _darkSurfaceContainerHighest = Color(0xFF333333);
+const Color _darkSurfaceColor = Color(0xFF000000);
+const Color _darkOnSurfaceColor = Color(0xFFFFFFFF);
+const Color _darkErrorColor = Color(0xFFF98A17);
+const Color _darkOnErrorColor = Colors.black;
+const Color _darkOutlineColor = Color(0xFF424242);
+const Color _darkSurfaceContainerHighest = Color(0xFF1D1D3C);
 
 
 class AppTheme {

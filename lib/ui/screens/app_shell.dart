@@ -1,7 +1,12 @@
+
 import 'package:flutter/material.dart';
+import 'package:kids_clouds/core/theme_provider.dart';
+import 'package:kids_clouds/data/mock_data.dart';
+import 'package:kids_clouds/ui/responsive/layout_helper.dart';
 import 'package:kids_clouds/ui/screens/agenda_screen.dart';
 import 'package:kids_clouds/ui/screens/home_screen.dart';
 import 'package:kids_clouds/core/theme.dart';
+import 'package:provider/provider.dart';
 
 enum AppPage { home, agenda }
 
@@ -47,16 +52,17 @@ class _AppShellState extends State<AppShell> {
 
   @override
   Widget build(BuildContext context) {
-    final bool isDesktop = MediaQuery.of(context).size.width >= 600; // Define breakpoint for desktop/tablet
-
+    // Determines if it's a desktop (or large tablet) screen
+    final bool isDesktop = LayoutHelper.isDesktop(context);
+    //final bool isDesktop = MediaQuery.of(context).size.width >= AppTheme.responsiveSize(context, 600, 1000); // Use responsiveSize for the breakpoint
     return Scaffold(
       appBar: AppBar(
         title: Text(_selectedPage == AppPage.home ? 'Inicio' : 'Agenda diaria'),
       ),
-      drawer: isDesktop ? null : _buildAppDrawer(), // Show Drawer only on mobile
+      drawer: isDesktop ? null : _buildAppDrawer(context, isDesktop), // Pass isDesktop to _buildAppDrawer
       body: Row(
         children: [
-          if (isDesktop) _buildAppDrawer(), // On desktop, show drawer as fixed column
+          if (isDesktop) _buildAppDrawer(context, isDesktop), // On desktop, show drawer as fixed column
           Expanded(child: _getPage()),
         ],
       ),
@@ -64,38 +70,75 @@ class _AppShellState extends State<AppShell> {
   }
 
   // Builds the Drawer widget
-  Widget _buildAppDrawer() {
+  Widget _buildAppDrawer(BuildContext context, bool isDesktop) {
+    // Access the ThemeProvider
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final parent = MockData.parent; // Get parent data
+
     return Drawer(
-      // Apply responsive padding to Drawer ListView
+      width: AppTheme.responsiveSize(context, 250, 300), // Responsive width for the drawer
       child: ListView(
         padding: AppTheme.responsivePadding(context),
         children: [
           DrawerHeader(
             decoration: BoxDecoration(color: Theme.of(context).colorScheme.primary),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Text(
-                  'Kids Clouds',
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.onPrimary,
-                    fontSize: AppTheme.responsiveSize(context, 20, 24),
-                    fontWeight: FontWeight.bold,
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                //mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Text(
+                    'Kids Clouds',
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onPrimary,
+                      fontSize: AppTheme.responsiveSize(context, 20, 24),
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
-                Image.network(
-                  'https://kidsnclouds.es/wp-content/uploads/2024/08/KNC-Sergio-Mix2-1.png',
-                  width: 200,
-                  height: 200,
-                  fit: BoxFit.contain,
-                  errorBuilder: (context, error, stackTrace) {
-                    return const Icon(Icons.error, size: 100);
-                  },
-                ),
-              ],
+                  const SizedBox(height: 8), // Space between text and image
+                  Image.network(
+                    'https://kidsnclouds.es/wp-content/uploads/2024/08/KNC-Sergio-Mix2-1.png',
+                    width: AppTheme.responsiveSize(context, 150, 200),
+                    height: AppTheme.responsiveSize(context, 75, 100),
+                    fit: BoxFit.contain,
+                    errorBuilder: (context, error, stackTrace) {
+                      return const Icon(Icons.error, size: 50, color: Colors.red);
+                    },
+                  ),
+                ],
+              ),
             ),
           ),
+          // Parent Information (Avatar and Name)
+          if (parent != null)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  CircleAvatar(
+                    radius: AppTheme.responsiveSize(context, 20, 24),
+                    backgroundImage: NetworkImage(parent.avatarUrl),
+                    onBackgroundImageError: (exception, stackTrace) {
+                      debugPrint('Error loading parent avatar: $exception');
+                    },
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      parent.name,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          const Divider(), // Visual separator after parent info
+
           ListTile(
             leading: const Icon(Icons.home),
             title: const Text('Inicio'),
@@ -110,7 +153,54 @@ class _AppShellState extends State<AppShell> {
             onTap: () => _selectPage(AppPage.agenda),
             selectedTileColor: Theme.of(context).colorScheme.primary.withAlpha((255 * 0.1).round()),
           ),
-          // You can add more drawer items here
+          const Divider(), // Visual separator before dark mode button
+
+          // Dark Mode Button
+          InkWell(
+            onTap: () {
+              // Toggle theme when tapped
+              themeProvider.toggleTheme(themeProvider.themeMode != ThemeMode.dark);
+            },
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: AppTheme.responsiveSize(context, 16, 24), vertical: 8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Icon(
+                    themeProvider.themeMode == ThemeMode.dark ? Icons.dark_mode : Icons.light_mode,
+                    size: AppTheme.responsiveSize(context, 24, 28), // Make icon size responsive
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Text(
+                      'Modo Oscuro',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
+                    ),//  TODO: Toggle Switch
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const Divider(), // Visual separator before logout button
+          // Logout Button
+          ListTile(
+            leading: Icon(Icons.logout, color: Theme.of(context).colorScheme.error),// Logout icon
+            title: Text(
+              'Cerrar Sesión',
+              style: TextStyle(color: Theme.of(context).colorScheme.error),
+            ),
+            onTap: () {
+              // Logout logic (here only a debugPrint)
+              debugPrint('User logged out!');
+              // You could navigate to a login screen, clear authentication states, etc.
+              // For example: Navigator.of(context).pushReplacementNamed('/login');
+              // For this example, we just close the drawer and go back to the home screen
+              _selectPage(AppPage.home); // Or navigate to a login screen
+            },
+          ),
         ],
       ),
     );

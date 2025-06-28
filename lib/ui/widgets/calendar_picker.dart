@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
-import 'package:kids_clouds/core/theme.dart'; // Importa tu AppTheme para utilidades responsivas
+import 'package:kids_clouds/core/theme.dart';
 
 class DateRangePickerPopup extends StatefulWidget {
   final DateTimeRange? initialRange;
@@ -23,9 +23,18 @@ class _DateRangePickerPopupState extends State<DateRangePickerPopup> {
   @override
   void initState() {
     super.initState();
-    _tempRange = widget.initialRange ??
-        DateTimeRange(start: DateTime.now(), end: DateTime.now());
+    _tempRange = widget.initialRange != null
+        ? DateTimeRange(
+            start: DateTime.utc(widget.initialRange!.start.year, widget.initialRange!.start.month, widget.initialRange!.start.day),
+            end: DateTime.utc(widget.initialRange!.end.year, widget.initialRange!.end.month, widget.initialRange!.end.day),
+          )
+        : DateTimeRange(start: _normalizeDate(DateTime.now()), end: _normalizeDate(DateTime.now()));
+
     _focusedDay = _tempRange.start;
+  }
+
+  DateTime _normalizeDate(DateTime date) {
+    return DateTime.utc(date.year, date.month, date.day);
   }
 
   @override
@@ -41,10 +50,10 @@ class _DateRangePickerPopupState extends State<DateRangePickerPopup> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppTheme.responsiveSize(context, 12, 16)),
       ),
- title: Text(
-  'Selecciona rango de fechas',
-  style: textTheme.titleLarge,
-),
+      title: Text(
+        'Select Date Range',
+        style: textTheme.titleLarge!.copyWith(color: colorScheme.onSurface),
+      ),
       content: SizedBox(
         width: calendarWidth,
         height: calendarHeight,
@@ -53,22 +62,19 @@ class _DateRangePickerPopupState extends State<DateRangePickerPopup> {
           lastDay: DateTime.utc(DateTime.now().year + 5, 12, 31),
           focusedDay: _focusedDay,
           calendarFormat: CalendarFormat.month,
-          selectedDayPredicate: (day) {
-            final normalizedDay = DateTime.utc(day.year, day.month, day.day);
-            final normalizedStart = DateTime.utc(_tempRange.start.year, _tempRange.start.month, _tempRange.start.day);
-            final normalizedEnd = DateTime.utc(_tempRange.end.year, _tempRange.end.month, _tempRange.end.day);
 
-            return (normalizedDay.isAtSameMomentAs(normalizedStart) ||
-                normalizedDay.isAtSameMomentAs(normalizedEnd) ||
-                (normalizedDay.isAfter(normalizedStart) && normalizedDay.isBefore(normalizedEnd)));
+          selectedDayPredicate: (day) {
+            final normalizedDay = _normalizeDate(day);
+            return (normalizedDay.isAtSameMomentAs(_tempRange.start) ||
+                normalizedDay.isAtSameMomentAs(_tempRange.end) ||
+                (normalizedDay.isAfter(_tempRange.start) && normalizedDay.isBefore(_tempRange.end)));
           },
+
           onDaySelected: (selectedDay, focusedDay) {
             setState(() {
-              final normalizedSelectedDay = DateTime.utc(selectedDay.year, selectedDay.month, selectedDay.day);
+              final normalizedSelectedDay = _normalizeDate(selectedDay);
 
-              if (_tempRange.start.day == _tempRange.end.day &&
-                  _tempRange.start.month == _tempRange.end.month &&
-                  _tempRange.start.year == _tempRange.end.year) {
+              if (_tempRange.start.isAtSameMomentAs(_tempRange.end)) {
                 if (normalizedSelectedDay.isBefore(_tempRange.start)) {
                   _tempRange = DateTimeRange(start: normalizedSelectedDay, end: _tempRange.start);
                 } else if (normalizedSelectedDay.isAfter(_tempRange.start)) {
@@ -124,17 +130,20 @@ class _DateRangePickerPopupState extends State<DateRangePickerPopup> {
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
           child: Text(
-            'Cancelar',
+            'Cancel',
             style: textTheme.labelLarge!.copyWith(color: colorScheme.primary),
           ),
         ),
         TextButton(
           onPressed: () {
-            widget.onRangeSelected(_tempRange);
+            final finalRange = _tempRange.start.isAfter(_tempRange.end)
+                ? DateTimeRange(start: _tempRange.end, end: _tempRange.start)
+                : _tempRange;
+            widget.onRangeSelected(finalRange);
             Navigator.of(context).pop();
           },
           child: Text(
-            'Aceptar',
+            'Accept',
             style: textTheme.labelLarge!.copyWith(color: colorScheme.primary),
           ),
         ),

@@ -15,7 +15,6 @@ enum EventCategory {
 
 class Event {
   final String id;
-  final String childId;
   final EventCategory category;
   final String title;
   final DateTime date;
@@ -23,7 +22,6 @@ class Event {
 
   Event({
     required this.id,
-    required this.childId,
     required this.category,
     required this.title,
     required this.date,
