@@ -20,7 +20,7 @@ const Color _darkOnSecondaryColor = Colors.white;
 const Color _darkSurfaceColor = Color(0xFF000000);
 const Color _darkOnSurfaceColor = Color(0xFFFFFFFF);
 const Color _darkErrorColor = Color(0xFFF98A17);
-const Color _darkOnErrorColor = Colors.black;
+//const Color _darkOnErrorColor = Colors.black;
 const Color _darkOutlineColor = Color(0xFF424242);
 const Color _darkSurfaceContainerHighest = Color(0xFF1D1D3C);
 
