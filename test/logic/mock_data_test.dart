@@ -1,9 +1,6 @@
 import 'dart:math';
-import 'package:flutter_test/flutter_test.dart'; // Needed for test and expect
-import 'package:kids_clouds/models/child.dart'; // Import your Child model
-import 'package:kids_clouds/models/event.dart'; // Import your Event and EventCategory models
-import 'package:kids_clouds/models/parant.dart'; // Import your Parent model
-import 'package:kids_clouds/data/mock_data.dart'; // Import your MockData class
+import 'package:flutter_test/flutter_test.dart';
+import 'package:kids_clouds/data/mock_data.dart';
 
 // A mock implementation of Random that returns predictable values
 class MockRandom implements Random {
