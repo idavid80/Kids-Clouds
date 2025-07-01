@@ -74,6 +74,8 @@ lib/
 │   ├── child.dart
 │   ├── event.dart
 │   └── parent.dart
+├── service/            # Servicio para imagen avatar
+│   ├── camara_service.dart
 ├── ui/                 # Widgets y pantallas
 │   ├── screens/
 │   │   ├── agenda_screen.dart
