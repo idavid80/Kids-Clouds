@@ -1,7 +1,10 @@
 
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:kids_clouds/core/theme_provider.dart';
 import 'package:kids_clouds/data/mock_data.dart';
+import 'package:kids_clouds/service/camara_service.dart';
 import 'package:kids_clouds/ui/responsive/layout_helper.dart';
 import 'package:kids_clouds/ui/screens/agenda_screen.dart';
 import 'package:kids_clouds/ui/screens/home_screen.dart';
@@ -22,9 +25,13 @@ class AppShell extends StatefulWidget {
 
 class _AppShellState extends State<AppShell> {
   late AppPage _selectedPage; // Using late to initialize in initState
+  final parent = MockData.parent; // Get parent data
+  String? _profileImagePath;
+  final CameraGalleryService _imageService = CameraGalleryService();
 
   @override
   void initState() {
+
     super.initState();
     _selectedPage = widget.initialPage; // Initialize with the page passed to constructor
   }
@@ -73,7 +80,6 @@ class _AppShellState extends State<AppShell> {
   Widget _buildAppDrawer(BuildContext context, bool isDesktop) {
     // Access the ThemeProvider
     final themeProvider = Provider.of<ThemeProvider>(context);
-    final parent = MockData.parent; // Get parent data
 
     return Drawer(
       width: AppTheme.responsiveSize(context, 250, 300), // Responsive width for the drawer
@@ -108,8 +114,36 @@ class _AppShellState extends State<AppShell> {
                 ],
               ),
             ),
+          ),GestureDetector(
+            onTap: () async {
+              final path = await _imageService.selectPhoto();
+              if (path != null) {
+                setState(() {
+                  _profileImagePath = path;
+                });
+              }
+            },
+            child: Container(
+              width: AppTheme.responsiveSize(context, 80, 100),
+              height: AppTheme.responsiveSize(context, 80, 100),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                image: DecorationImage(
+                  image: _profileImagePath != null
+                      ? FileImage(File(_profileImagePath!))
+                      : const AssetImage('assets/images/defaul_avatar.jpg') as ImageProvider,
+                  fit: BoxFit.contain, // Aquí controlas que se vea completa
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 10),
+          const Text(
+            'Luis López',
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
           // Parent Information (Avatar and Name)
+          /*
           if (parent != null)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
@@ -136,7 +170,7 @@ class _AppShellState extends State<AppShell> {
                   ),
                 ],
               ),
-            ),
+            ),*/
           const Divider(), // Visual separator after parent info
 
           ListTile(

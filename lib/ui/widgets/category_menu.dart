@@ -25,66 +25,73 @@ class CategoryMenu extends StatelessWidget {
       color: Theme.of(context).scaffoldBackgroundColor, // Or Colors.transparent if you don't want a visible background
       child: Padding(
         padding: AppTheme.responsivePadding(context),
+        /*
         child: Wrap(
           spacing: 8.0,
           runSpacing: 8.0,
-          alignment: WrapAlignment.start,
-          children: [
-            // "All" category chip to reset the selection
-            ChoiceChip(
-              label: Text(
-                'Todos',
-                style: textTheme.bodyMedium?.copyWith(
-                  fontSize: chipTextFontSize,
-                  color: selectedCategory == null
-                      ? colorScheme.onPrimary
-                      : colorScheme.onSurface,
-                ),
-              ),
-              selected: selectedCategory == null, // Selected when no specific category is chosen
-              onSelected: (_) => onCategorySelected(null), // Clear selection on tap
-              selectedColor: colorScheme.primary,
-              backgroundColor: colorScheme.surfaceContainerHighest,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-                side: BorderSide(
-                  color: selectedCategory == null
-                      ? Colors.transparent
-                      : colorScheme.outline.withAlpha((255 * 0.5).round()),
-                ),
-              ),
-              labelPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-            ),
+          alignment: WrapAlignment.start,*/
 
-            // Dynamic category chips from the enum values
-            ...categories.map((category) {
-              final bool isSelected = selectedCategory == category;
-              return ChoiceChip(
+        // Scrollable horizontal row of chips
+        child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            children: [
+              // "All" category chip to reset the selection
+              ChoiceChip(
                 label: Text(
-                  category.label,
+                  'Todos',
                   style: textTheme.bodyMedium?.copyWith(
                     fontSize: chipTextFontSize,
-                    color: isSelected
+                    color: selectedCategory == null
                         ? colorScheme.onPrimary
                         : colorScheme.onSurface,
                   ),
                 ),
-                selected: isSelected, // Whether this chip is selected
-                onSelected: (_) => onCategorySelected(category), // Callback with selected category
+                selected: selectedCategory == null, // Selected when no specific category is chosen
+                onSelected: (_) => onCategorySelected(null), // Clear selection on tap
                 selectedColor: colorScheme.primary,
                 backgroundColor: colorScheme.surfaceContainerHighest,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
                   side: BorderSide(
-                    color: isSelected
+                    color: selectedCategory == null
                         ? Colors.transparent
                         : colorScheme.outline.withAlpha((255 * 0.5).round()),
                   ),
                 ),
                 labelPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-              );
-            }),
-          ],
+              ),
+
+              // Dynamic category chips from the enum values
+              ...categories.map((category) {
+                final bool isSelected = selectedCategory == category;
+                return ChoiceChip(
+                  label: Text(
+                    category.label,
+                    style: textTheme.bodyMedium?.copyWith(
+                      fontSize: chipTextFontSize,
+                      color: isSelected
+                          ? colorScheme.onPrimary
+                          : colorScheme.onSurface,
+                    ),
+                  ),
+                  selected: isSelected, // Whether this chip is selected
+                  onSelected: (_) => onCategorySelected(category), // Callback with selected category
+                  selectedColor: colorScheme.primary,
+                  backgroundColor: colorScheme.surfaceContainerHighest,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    side: BorderSide(
+                      color: isSelected
+                          ? Colors.transparent
+                          : colorScheme.outline.withAlpha((255 * 0.5).round()),
+                    ),
+                  ),
+                  labelPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                );
+              }),
+            ],
+          ),
         ),
       ),
     );
